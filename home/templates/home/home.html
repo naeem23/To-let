@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+
+{% block title %}Tolet | Home{% endblock %}
+
+
+{% block add-css %}
+	.landing{
+		background-image: url(https://images.unsplash.com/photo-1466171488221-e15f4c40e9e4?ixlib=rb-1.2.1&auto=format&fit=crop&w=667&q=80);
+		height: 80vh;
+		width: 100%;
+		background-size: cover;
+		background-position: center; 
+	}
+{% endblock %}
+
+{% block main %}
+
+<!-- 	<div class="ui teal huge center aligned block header">Home
+		<a href="{% url 'properties:properties' %}">Properties</a>
+		Apartment: {{ countA }}Office: {{ countO }}House: {{ countH }}
+	</div> -->
+
+
+	<!-- searching property -->
+	<div class="container-fluid landing">
+		<div class="row flex-center">
+			<div class="col-8 text-center">
+				<h3 class="font-weight-bold text-center text-white">Search Property</h3>
+				<form action="{% url 'properties:properties' %}" method="GET">
+					<div class="row mt-4">
+						<div class="col-4">
+							<input type="text" name="l" class="form-control" placeholder="Location" value="{{ request.GET.l }}">
+						</div>
+						<div class="col-4">
+							<input type="text" name="t" class="form-control" placeholder="Property Type" value="{{ request.GET.t }}">
+						</div>
+						<div class="col-4">
+	  						<input type="text" name="p" class="form-control" placeholder="Rent Per Month" value="{{ request.GET.p }}">
+						</div>
+					</div>
+					<div class="row mt-4">
+						<div class="col-12 text-center">
+							<button class="btn btn-default btn-sm" type="submit">Search</button>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>  
+	<!-- end of searching property -->
+
+	<div class="container mt-5">
+		<div class="row">
+			<div class="col-12">
+				<h3 class="text-teal font-weight-bold text-center">New Properties</h3>
+			</div>
+		</div>
+		<div class="row mt-3">
+			{% for p in p %}
+			<div class="col-md-4 mb-4">
+				<div class="card">
+					<div class="card-header">
+						<div class="card-img-top">
+							<img src="{{ p.main_photo.url }}" alt="Property" class="img-fluid">
+						</div>
+					</div>
+					<div class="card-body">
+						<div>
+							<h4 class="card-title"><a class="text-teal" href="{{ p.get_absolute_url }}">{{ p.house_name }}</a></h4>
+						</div>
+						<p class="card-text">Type: <a href="{{ p.category.get_absolute_url }}">{{ p.category.name }} </a></p>
+						<p class="card-text"><i class="fas fa-map-marker mr-2"></i>{{ p.location }}</p>
+						<a href="{{ p.get_absolute_url }}" class="orange-text d-flex flex-row-reverse p-2">Read more<i class="fas fa-angle-double-right ml-2"></i></a>
+					</div>
+				</div>
+			</div>
+			{% endfor %}
+		</div>
+		<div class="row mt-4">
+			<div class="col-12 text-center">
+				<a href="{% url 'properties:properties' %}" class="btn btn-info">View all</a>
+			</div>
+		</div>
+	</div>
+{% endblock %}
+
+{% block script %}
+	{% load static %}
+	<script src="{% static 'home/assets/js/homejq.js' %}"></script>
+{% endblock %}

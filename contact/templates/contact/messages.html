@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% block title %}Tolet | Messages{% endblock %}
+
+{% block add-css %}
+    {% load static %}
+
+{% endblock %}
+
+{% block main %}
+  <div class="container-fluid">
+      <div class="row">
+          <div class="col-md-3 mr-3">
+              <!--Card-->
+              <div class="card testimonial-card py-3">
+                <!--Background color-->
+                <div class="card-up info-color"></div>
+                <!--Avatar-->
+                <div class="avatar mx-auto white">
+                  <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRspXzSI-tN9IlnHaDrQj6OLyFd38stbXpL_eZDZow3Pw4T2ae2" class="rounded-circle img-fluid">
+                </div>
+                <div class="card-body">
+                  <!--Name-->
+                  <h4 class="font-weight-bold mb-4 text-center">{{ request.user }}</h4>
+                  <hr>
+                  <ul class="list-group">
+                    {% if request.user.is_staff or request.user.is_superuser %}
+                    <li class="list-group-item"><a href="{% url 'accounts:profile' username=request.user %}">All adds</a></li>
+                    <li class="list-group-item"><a href="{% url 'accounts:messages' %}">Messages</a></li>
+                    {% else %}
+                    <li class="list-group-item"><a href="{% url 'accounts:profile' username=request.user %}">My adds</a></li>
+                    {% endif %}
+                    <li class="list-group-item"><a href="{% url 'properties:addproperty' %}">Post add</a></li>
+                  </ul>
+                </div>
+              </div>
+              <!--Card-->
+          </div>
+          <div class="col-md-8 mt-5">
+          	<h3 class="font-weight-bold mb-5">Mesages</h3>
+          	{% for message in messages %}
+		    <div class="message p-5 z-depth-1 mt-4 mb-5">
+		        <!-- row for name and Email -->
+		        <div class="row">
+		            <div class="col-md-6 col-12 col-sm-6">
+		                <p><span class="text-danger font-weight-bold">Full Name: </span>{{ message.name }}</p>
+		            </div>
+		            <div class="col-md-6 col-12 col-sm-6">
+		                <p><span class="text-danger font-weight-bold">Email: </span>{{ message.email }}</p>
+		            </div>
+		        </div>
+
+		        <div class="row">
+		            <div class="col">
+		                <p><span class="text-danger font-weight-bold">Subject: </span>{{ message.subject }}</p>
+		            </div>
+		        </div>
+		        <!-- row for review -->
+		        <div class="row">
+		            <div class="col">
+		                <p class="text-danger font-weight-bold">Message</p>
+		                <p class="text-justify">{{ message.message }}</p>
+		            </div>
+		        </div>
+
+		        <hr>
+
+		        <!-- row for approve and delete button -->
+		        <p class="text-muted">{{ message.msg_send_date|date }}</p>
+		    </div>
+		{% empty %}
+		    <p class="p-4 mt-4 border text-muted">You have no message in message list.</p>   
+		{% endfor %}
+
+          </div>
+      </div>
+  </div>
+{% endblock %}
+
+{% block script %}
+{% endblock %}

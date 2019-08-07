@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+
+{% block title %}Tolet | Login{% endblock %}
+
+{% block add-css %}
+    {% load static %}
+
+{% endblock %}
+
+{% block main %}
+  <div class="container-fluid">
+      <div class="row">
+          <div class="col-md-3 mr-3">
+              <!--Card-->
+              <div class="card testimonial-card py-3">
+                <!--Background color-->
+                <div class="card-up info-color"></div>
+                <!--Avatar-->
+                <div class="avatar mx-auto white">
+                  <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRspXzSI-tN9IlnHaDrQj6OLyFd38stbXpL_eZDZow3Pw4T2ae2" class="rounded-circle img-fluid">
+                </div>
+                <div class="card-body">
+                  <!--Name-->
+                  <h4 class="font-weight-bold mb-4 text-center">{{ request.user }}</h4>
+                  <hr>
+                  <ul class="list-group">
+                    {% if request.user.is_staff or request.user.is_superuser %}
+                    <li class="list-group-item"><a href="{% url 'accounts:profile' username=request.user %}">All adds</a></li>
+                    <li class="list-group-item"><a href="{% url 'accounts:messages' %}">Messages</a></li>
+                    {% else %}
+                    <li class="list-group-item"><a href="{% url 'accounts:profile' username=request.user %}">My adds</a></li>
+                    {% endif %}
+                    <li class="list-group-item"><a href="{% url 'properties:addproperty' %}">Post add</a></li>
+                  </ul>
+                </div>
+              </div>
+              <!--Card-->
+          </div>
+          <div class="col-md-8 mt-5">
+              {% if request.user.is_staff or request.user.is_superuser %}
+                <h4 class="font-weight-bold">All Adds</h4>
+              {% else %}
+                <h4 class="font-weight-bold">My Adds</h4>
+              {% endif %}
+              <div class="row mt-4">
+                {% for p in properties %}
+                <div class="col-md-6 mb-4">
+                  <div class="card">
+                    <div class="card-header">
+                      <div class="card-img-top">
+                        <img src="{{ p.main_photo.url }}" alt="Property" class="img-fluid">
+                      </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                          <div class="col-md-10">
+                            <h4 class="card-title"><a class="text-teal" href="{{ p.get_absolute_url }}">{{ p.house_name }}</a></h4>
+                          </div>
+                          <div class="col-md-2">
+                            {% if not request.user.is_staff %}
+                              {% if not p.draft %}
+                                <div class="spinner-grow text-primary" role="status">
+                                  <span class="sr-only">Loading...</span>
+                                </div>
+                              {% endif %}
+                            {% endif %}
+                          </div>
+                        </div>
+
+                        <p class="card-text"><i class="fas fa-map-marker mr-2"></i>{{ p.location }}</p>
+                        <p class="card-text mt-2">Type: <a href="{{ p.category.get_absolute_url }}">{{ p.category.name }} </a></p>
+
+                        <div class="row">
+                          <div class="col-md-4 mt-2">
+                            {% if request.user.is_staff or request.user.is_superuser %}
+                              {% if p.draft %}
+                                <a href="{% url 'properties:publish' slug=p.slug %}"><i class="far fa-paper-plane mr-2"></i>Publish</a>
+                              {% else %}
+                                {% if p.is_available %}
+                                  <a href="{% url 'properties:unavailable' slug=p.slug %}"><i class="fas fa-ban mr-2"></i>Unavailable</a>
+                                {% else %}
+                                  <p class="card-text text-danger">Unavailable</p>
+                                {% endif %}
+                              {% endif %}
+                            {% else %}
+                                {% if p.is_available %}
+                                <a href="{% url 'properties:unavailable' slug=p.slug %}"><i class="fas fa-ban mr-2"></i>Unavailable</a>
+                                {% else %}
+                                  <p class="card-text text-danger">Unavailable</p>
+                                {% endif %}
+                            {% endif %}
+                          </div>
+                          <div class="col-md-4 mt-2">
+                            <a href="{% url 'properties:edit' slug=p.slug %}" class="ml-3"><i class="fas fa-pencil-alt mr-2"></i>Edit</a>
+                          </div>
+                          <div class="col-md-4">
+                            <a href="{% url 'properties:delete' slug=p.slug %}" class="btn btn-danger btn-sm">Delete</a>
+                          </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <a href="{{ p.get_absolute_url }}" class="orange-text">Read more<i class="fas fa-angle-double-right ml-2"></i></a>
+                    </div>
+                  </div>
+                </div>
+                {% endfor %}
+              </div>
+
+              <div class="row mt-4">
+                <div class="col-12">
+                {% if properties.has_other_pages %}
+                <nav aria-label="Page navigation example mt-5">
+                   <ul class="pagination pg-blue">
+                          {% if properties.has_previous %}
+                          <li class="page-item"><a href="?page={{ properties.previous_page_number }}" class="page-link"><i class="fas fa-angle-left"></i></a></li>
+                          {% else %}
+                          <li class="page-item disabled"><span class="page-link"><i class="fas fa-angle-left"></i></span></li>
+                          {% endif %}
+
+                        {% for i in properties.paginator.page_range %}
+                            {% if properties.number == i %}
+                            <li class="page-item active">
+                              <span class="page-link">{{ i }}<span class="sr-only">(current)</span></span>
+                            </li>
+                            {% else %}
+                            <li class="page-item"><a href="?page={{ i }}" class="page-link">{{ i }}</a></li>
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if properties.has_next %}
+                          <li class="page-item"><a href="?page={{ properties.next_page_number }}" class="page-link"><i class="fas fa-angle-right"></i></a></li>
+                        {% else %}
+                          <li class="page-item disabled"><span class="page-link"><i class="fas fa-angle-right"></i></span></li>
+                        {% endif %}
+                {% endif %}
+                </div>
+              </div>
+          </div>
+      </div>
+  </div>
+{% endblock %}
+
+{% block script %}
+{% endblock %}
